@@ -1,5 +1,5 @@
 import numpy as np 
-
+import numpy.ma as ma 
 class LogisticRegression:
     def __init__(self, total_features=1):
         self.total_features = total_features
@@ -37,6 +37,18 @@ class LogisticRegression:
         Return :
         error rate of the current weight -> float
         '''
+        prediction = self.predict(x)
+        one = np.ones(len(y))
+        
+        # Calculate Difference for y[i] = 1
+        a = np.multiply(y, ma.log(prediction).filled(0))
+
+        # Calculate Difference for y[i] = 0
+        b = np.multiply(one - y, ma.log(one - prediction).filled(0))
+        difference = a + b
+        total_cost = -np.sum(difference, axis=0) / len(y)
+        return total_cost
+
 
     def gradient_descent(self, x, y, learning_rate=None, batch_size=None, total_epochs=None):
         '''
