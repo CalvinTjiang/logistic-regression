@@ -2,7 +2,8 @@ import numpy as np
 
 class LogisticRegression:
     def __init__(self, total_features=1):
-        pass
+        self.total_features = total_features
+        self.weight = np.random.rand(total_features)
     
     def predict(self, x):
         '''
@@ -14,6 +15,16 @@ class LogisticRegression:
         Return :
         array of predicted output -> numpy array with shape = (n)
         '''
+         # Check if x have a same number of features with weight
+        if len(x[0]) != self.total_features:
+            raise Exception("Number of features in x is not equal with total feature in weight!")
+        
+        # Calculate Z
+        z = x @ self.weight[np.newaxis, :].T
+
+        # Return Prediction
+        prediction = (1 / (1 + np.exp(-z)))
+        return prediction
 
     def cost(self, x, y):
         '''
