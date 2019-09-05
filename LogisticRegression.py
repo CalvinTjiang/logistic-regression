@@ -4,6 +4,9 @@ class LogisticRegression:
     def __init__(self, total_features=1):
         self.total_features = total_features
         self.weight = np.random.rand(total_features)
+        self.learning_rate = 1e-2
+        self.batch_size = total_features
+        self.total_epochs = total_features
     
     def predict(self, x):
         '''
@@ -24,7 +27,7 @@ class LogisticRegression:
 
         # Return Prediction
         prediction = (1 / (1 + np.exp(-z)))
-        return prediction
+        return prediction[:,0]
 
     def cost(self, x, y):
         '''
@@ -39,7 +42,7 @@ class LogisticRegression:
         '''
         prediction = self.predict(x)
         one = np.ones(len(y))
-        
+
         # Calculate Difference for y[i] = 1
         a = np.multiply(y, ma.log(prediction).filled(0))
 
@@ -65,3 +68,32 @@ class LogisticRegression:
         Return:
         None
         '''
+        if learning_rate == None:
+            learning_rate = self.learning_rate
+        
+        if batch_size == None:
+            batch_size = self.batch_size
+        
+        if total_epochs == None:
+            total_epochs = self.total_epochs
+
+        for epoch in range(total_epochs):
+            # initial the start batch to 0
+            start_batch = 0 
+            end_batch = batch_size
+            while start_batch < len(x):
+                # if the end_batch is more than the length of x 
+                if end_batch >= len(x):
+                    end_batch = len(x)
+
+                # Divide the train data into smaller batch
+                current_x = x[start_batch:end_batch]
+                current_y = y[start_batch:end_batch]
+                
+                # Calculate the derivative
+                derivative = (self.predict(current_x) - current_y) @ current_x
+                self.weight -= (learning_rate / len(current_y)) * derivative
+
+                # Move to next batch
+                start_batch += batch_size
+                end_batch += batch_size
